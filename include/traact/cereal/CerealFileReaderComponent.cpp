@@ -45,10 +45,15 @@ namespace traact::component {
 
 
         bool ReadValue(typename T::NativeType &data) override {
-            std::ifstream stream;
-            stream.open(FileReader<T>::filename_);
-            cereal::JSONInputArchive archive(stream);
-            archive(data);
+            try{
+                std::ifstream stream;
+                stream.open(FileReader<T>::filename_);
+                cereal::JSONInputArchive archive(stream);
+                archive(data);
+            } catch (...) {
+                SPDLOG_ERROR("unkown exception on ReadValue {0}", FileReader<T>::filename_);
+            }
+
             return true;
         }
 

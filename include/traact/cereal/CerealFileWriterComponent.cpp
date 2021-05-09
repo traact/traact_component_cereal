@@ -56,26 +56,13 @@ namespace traact::component {
         }
 
         bool CloseFile() override {
-//            try{
-//                //archive_.reset();
-//                stream_.close();
-//            } catch (...){
-//              spdlog::error("Unspecified error when closing file for component {0}", FileWriter<T>::name_);
-//                return false;
-//            }
-
-            return true;
-        }
-
-        bool saveValue(TimestampType ts, const typename T::NativeType &value) override {
-
             try{
                 //stream_.seekp(0);
                 stream_.open(FileWriter<T>::filename_);
 
                 {
                     cereal::JSONOutputArchive archive_(stream_);
-                    archive_(value);
+                    archive_(value_);
                     //archive_( ts.time_since_epoch().count());
                 }
 
@@ -87,12 +74,36 @@ namespace traact::component {
                 spdlog::error("{0} : could not write file", Component::name_);
             }
 
+            return true;
+        }
+
+        bool saveValue(TimestampType ts, const typename T::NativeType &value) override {
+
+//            try{
+//                //stream_.seekp(0);
+//                stream_.open(FileWriter<T>::filename_);
+//
+//                {
+//                    cereal::JSONOutputArchive archive_(stream_);
+//                    archive_(value);
+//                    //archive_( ts.time_since_epoch().count());
+//                }
+//
+//
+//                stream_.flush();
+//                stream_.close();
+//
+//            } catch ( ... ) {
+//                spdlog::error("{0} : could not write file", Component::name_);
+//            }
+            value_ = value;
 
             return true;
         }
 
     private:
         std::ofstream stream_;
+        typename T::NativeType value_;
         //std::shared_ptr<cereal::JSONOutputArchive> archive_;
         RTTR_ENABLE(FileWriter<T>, Component)
     };

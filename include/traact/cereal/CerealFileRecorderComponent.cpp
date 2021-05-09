@@ -58,8 +58,14 @@ namespace traact::component {
 
         bool CloseFile() override {
             try{
-                //archive_.reset();
-                //stream_.close();
+                std::ofstream stream;
+                stream.open(FileWriter<T>::filename_);
+                {
+                    cereal::JSONOutputArchive archive(stream);
+                    archive(all_data_);
+                }
+
+                stream.close();
             } catch (...){
               spdlog::error("{0}: Unspecified error when closing file", FileWriter<T>::name_);
                 return false;
@@ -71,26 +77,15 @@ namespace traact::component {
         bool saveValue(TimestampType ts, const typename T::NativeType &value) override {
 
             std::uint64_t ns = ts.time_since_epoch().count();
-            //(*archive_)(ns);
-            //(*archive_)(value);
+            all_data_.emplace(std::make_pair(ns, value));
 
-            all_data_.emplace(ns, value);
-
-            std::ofstream stream;
-            stream.open(FileWriter<T>::filename_);
-            {
-                cereal::JSONOutputArchive archive(stream);
-                archive(all_data_);
-            }
-
-            stream.close();
 
             return true;
         }
 
     private:
-        std::ofstream stream_;
-        std::shared_ptr<cereal::JSONOutputArchive> archive_;
+        //std::ofstream stream_;
+        //std::shared_ptr<cereal::JSONOutputArchive> archive_;
         std::map<std::uint64_t , typename T::NativeType> all_data_;
     RTTR_ENABLE(FileWriter<T>, Component)
     };
