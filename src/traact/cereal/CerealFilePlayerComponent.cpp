@@ -24,7 +24,7 @@ class CerealFilePlayer : public FilePlayer<T> {
             stream_.open(FilePlayer<T>::filename_);
             archive_ = std::make_shared<cereal::JSONInputArchive>(stream_);
         } catch (...) {
-            spdlog::error("{0}: Unspecified error when opening file", FilePlayer<T>::name_);
+            SPDLOG_ERROR("{0}: Unspecified error when opening file", FilePlayer<T>::name_);
             return false;
         }
 
@@ -36,7 +36,7 @@ class CerealFilePlayer : public FilePlayer<T> {
             archive_.reset();
             stream_.close();
         } catch (...) {
-            spdlog::error("{0}: Unspecified error when closing file", FilePlayer<T>::name_);
+            SPDLOG_ERROR("{0}: Unspecified error when closing file", FilePlayer<T>::name_);
             return false;
         }
 

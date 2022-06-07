@@ -23,7 +23,7 @@ class CerealFileWriter : public FileWriter<T> {
 //                stream_.open(FileWriter<T>::filename_);
 //                //archive_ = std::make_shared<cereal::JSONOutputArchive>(stream_);
 //            }catch (...){
-//                spdlog::error("Unspecified error when opening file for component {0}", FileWriter<T>::name_);
+//                SPDLOG_ERROR("Unspecified error when opening file for component {0}", FileWriter<T>::name_);
 //                return false;
 //            }
 
@@ -45,7 +45,7 @@ class CerealFileWriter : public FileWriter<T> {
             stream_.close();
 
         } catch (...) {
-            spdlog::error("{0} : could not write file", Component::name_);
+            SPDLOG_ERROR("{0} : could not write file", Component::name_);
         }
 
         return true;
@@ -68,7 +68,7 @@ class CerealFileWriter : public FileWriter<T> {
 //                stream_.close();
 //
 //            } catch ( ... ) {
-//                spdlog::error("{0} : could not write file", Component::name_);
+//                SPDLOG_ERROR("{0} : could not write file", Component::name_);
 //            }
         value_ = value;
 

@@ -24,7 +24,7 @@ class CerealFileRecorder : public FileRecorder<T> {
             //stream_.open(FileWriter<T>::filename_);
             //archive_ = std::make_shared<cereal::JSONOutputArchive>(stream_);
         } catch (...) {
-            spdlog::error("{0}: Unspecified error when opening file", FileWriter<T>::name_);
+            SPDLOG_ERROR("{0}: Unspecified error when opening file", FileWriter<T>::name_);
             return false;
         }
 
@@ -42,7 +42,7 @@ class CerealFileRecorder : public FileRecorder<T> {
 
             stream.close();
         } catch (...) {
-            spdlog::error("{0}: Unspecified error when closing file", FileWriter<T>::name_);
+            SPDLOG_ERROR("{0}: Unspecified error when closing file", FileWriter<T>::name_);
             return false;
         }
 
