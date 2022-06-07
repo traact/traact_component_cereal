@@ -2,7 +2,7 @@
 #ifndef TRAACT_SERIALIZATION_EXPORT_H
 #define TRAACT_SERIALIZATION_EXPORT_H
 
-#ifdef TRAACT_TARGET_WINDOWS	   
+#ifdef TRAACT_TARGET_WINDOWS
 #define TRAACT_FACADE_VISIBILITY_EXPORT __declspec(dllexport)
 #else
 #define TRAACT_FACADE_VISIBILITY_EXPORT __attribute__((visibility("default")))

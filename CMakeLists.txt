@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 # public header
 set(LIB_HEADERS
-        include/traact/traact_serialization_export.h
-        include/traact/cereal/CerealSpatial.cpp include/traact/cereal/CerealSpatial.h include/traact/cereal/CerealVision.cpp include/traact/cereal/CerealVision.h include/traact/cereal/CerealFileWriterComponent.cpp include/traact/cereal/CerealFileReaderComponent.cpp include/traact/cereal/CerealFileRecorderComponent.cpp include/traact/cereal/CerealFilePlayerComponent.cpp)
+        src/traact/traact_serialization_export.h
+        src/traact/cereal/CerealSpatial.cpp src/traact/cereal/CerealSpatial.h src/traact/cereal/CerealVision.cpp src/traact/cereal/CerealVision.h src/traact/cereal/CerealFileWriterComponent.cpp src/traact/cereal/CerealFileReaderComponent.cpp src/traact/cereal/CerealFileRecorderComponent.cpp src/traact/cereal/CerealFilePlayerComponent.cpp)
 
 # rest of source code
 #set(LIB_SOURCES )
@@ -29,7 +29,7 @@ if (WITH_COVERAGE)
     add_link_options(-fprofile-arcs -ftest-coverage)
 endif ()
 
-add_compile_options( -fno-gnu-unique )
+add_compile_options(-fno-gnu-unique)
 
 if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
     add_definitions(-DTBB_USE_DEBUG=1)
@@ -44,30 +44,29 @@ add_definitions(-DTBB_PREVIEW_FLOW_GRAPH_NODES=1)
 # use files and defines instead
 #set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 #set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
-#generate_export_header(${CONAN_PACKAGE_NAME} EXPORT_FILE_NAME "../../include/traact/${CONAN_PACKAGE_NAME}_export.h")
+#generate_export_header(${CONAN_PACKAGE_NAME} EXPORT_FILE_NAME "../../src/traact/${CONAN_PACKAGE_NAME}_export.h")
 
-if(UNIX)
-    if(APPLE)
+if (UNIX)
+    if (APPLE)
         MESSAGE(STATUS "Building for Macos.")
         add_definitions(-DTRAACT_TARGET_APPLE=1)
-    endif()
+    endif ()
     MESSAGE(STATUS "Building for Unix.")
     add_definitions(-DTRAACT_TARGET_UNIX=1)
-elseif(WIN32)
+elseif (WIN32)
     MESSAGE(STATUS "Building for Windows.")
     add_definitions(-DTRAACT_TARGET_WINDOWS=1)
-endif()
+endif ()
 
 if (MSVC)
     # per default disable extended aligned storage for now on msvc
     add_definitions(-D_DISABLE_EXTENDED_ALIGNED_STORAGE -DHAVE_SNPRINTF)
-endif()
+endif ()
 
 add_library(${CONAN_PACKAGE_NAME} SHARED
         ${LIB_HEADERS}
         #${LIB_SOURCES}
         )
-
 
 
 conan_target_link_libraries(${CONAN_PACKAGE_NAME})
@@ -77,8 +76,6 @@ set_target_properties(${CONAN_PACKAGE_NAME} PROPERTIES VERSION ${CONAN_PACKAGE_V
 #set_target_properties(${CONAN_PACKAGE_NAME} PROPERTIES PUBLIC_HEADER "${LIB_HEADERS}")
 
 target_include_directories(${CONAN_PACKAGE_NAME} PUBLIC
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         ${CONAN_INCLUDE_DIRS_NLOHMANN_JSON}
         )
 target_include_directories(${CONAN_PACKAGE_NAME} PRIVATE
@@ -94,11 +91,6 @@ ENDIF (NOT WIN32)
 install(TARGETS ${CONAN_PACKAGE_NAME}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/traact" # source directory
-        DESTINATION "include" # target directory
-        FILES_MATCHING # install only matched files
-        PATTERN "*.h" # select header files
-        )
 
 #install(FILES "${PROJECT_BINARY_DIR}/${CONAN_PACKAGE_NAME}_export.h" DESTINATION "include")
 

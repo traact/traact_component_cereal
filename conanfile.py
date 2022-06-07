@@ -4,12 +4,12 @@ from conans import ConanFile, CMake, tools
 
 
 class Traact(ConanFile):
-    name = "traact_serialization"
-    version = "0.0.1"
-    
-    description = "Serialization for traact"
+    name = "traact_component_cereal"
+    version = "0.1.0"
+
+    description = "Cereal based serialization for traact"
     url = ""
-    license = "BSD 3-Clause"
+    license = "MIT"
     author = "Frieder Pankratz"
 
     short_paths = True
@@ -27,18 +27,15 @@ class Traact(ConanFile):
         "with_tests": True,
     }
 
-    exports_sources = "include/*", "src/*", "tests/*", "CMakeLists.txt"
+    exports_sources = "src/*", "tests/*", "CMakeLists.txt"
 
     def requirements(self):
         if self.options.with_tests:
             self.requires("gtest/1.10.0")
-        
-        self.requires("cereal/1.3.0")        
-        self.requires("traact_spatial/%s@camposs/stable" % self.version)
-        self.requires("traact_vision/%s@camposs/stable" % self.version)
 
-        
-        
+        self.requires("cereal/1.3.0")
+        self.requires("traact_spatial/[>=0.1.0]@camposs/stable")
+        self.requires("traact_vision/[>=0.1.0]@camposs/stable")
 
     def _configure_cmake(self):
         cmake = CMake(self)
@@ -69,4 +66,4 @@ class Traact(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = [self.name]
-        #self.cpp_info.libs = tools.collect_libs(self)
+        # self.cpp_info.libs = tools.collect_libs(self)
