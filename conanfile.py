@@ -8,7 +8,7 @@ class Traact(ConanFile):
     version = "0.1.0"
 
     description = "Cereal based serialization for traact"
-    url = ""
+    url = "https://github.com/traact/traact_component_cereal.git"
     license = "MIT"
     author = "Frieder Pankratz"
 
@@ -31,11 +31,11 @@ class Traact(ConanFile):
 
     def requirements(self):
         if self.options.with_tests:
-            self.requires("gtest/1.10.0")
+            self.requires("gtest/[>=1.10.0]")
 
         self.requires("cereal/1.3.0")
-        self.requires("traact_spatial/[>=0.1.0]@camposs/stable")
-        self.requires("traact_vision/[>=0.1.0]@camposs/stable")
+        self.requires("traact_spatial/[>=0.1.0]@traact/latest")
+        self.requires("traact_vision/[>=0.1.0]@traact/latest")
 
     def _configure_cmake(self):
         cmake = CMake(self)
