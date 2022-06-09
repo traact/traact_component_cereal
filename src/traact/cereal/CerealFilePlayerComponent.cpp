@@ -56,22 +56,12 @@ class CerealFilePlayer : public FilePlayer<T> {
  private:
     std::ifstream stream_;
     std::shared_ptr<cereal::JSONInputArchive> archive_;
- RTTR_ENABLE(FilePlayer<T>, Component)
+ TRAACT_PLUGIN_ENABLE(FilePlayer<T>, Component)
 };
 
 }
 
-// It is not possible to place the macro multiple times in one cpp file. When you compile your plugin with the gcc toolchain,
-// make sure you use the compiler option: -fno-gnu-unique. otherwise the unregistration will not work properly.
-RTTR_PLUGIN_REGISTRATION // remark the different registration macro!
-{
-
-    using namespace rttr;
-    using namespace traact;
-    registration::class_<component::CerealFilePlayer<spatial::Pose6DHeader> >("FilePlayer_cereal_spatial:Pose6D").constructor<
-        std::string>()();
-    registration::class_<component::CerealFilePlayer<spatial::Position2DListHeader> >(
-        "FilePlayer_cereal_spatial:Position2DList").constructor<std::string>()();
-    registration::class_<component::CerealFilePlayer<spatial::Position3DListHeader> >(
-        "FilePlayer_cereal_spatial:Position3DList").constructor<std::string>()();
-}
+BEGIN_TRAACT_PLUGIN_REGISTRATION
+    REGISTER_SPATIAL_COMPONENTS(traact::component::CerealFilePlayer)
+    REGISTER_COMPONENT(traact::component::CerealFilePlayer<traact::vision::CameraCalibrationHeader>)
+END_TRAACT_PLUGIN_REGISTRATION

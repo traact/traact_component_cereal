@@ -57,22 +57,13 @@ class CerealFileRecorder : public FileRecorder<T> {
     //std::ofstream stream_;
     //std::shared_ptr<cereal::JSONOutputArchive> archive_;
     std::map<std::uint64_t, typename T::NativeType> all_data_;
- RTTR_ENABLE(FileWriter<T>, Component)
+ TRAACT_PLUGIN_ENABLE(FileWriter<T>, Component)
 };
 
 }
 
-// It is not possible to place the macro multiple times in one cpp file. When you compile your plugin with the gcc toolchain,
-// make sure you use the compiler option: -fno-gnu-unique. otherwise the unregistration will not work properly.
-RTTR_PLUGIN_REGISTRATION // remark the different registration macro!
-{
+BEGIN_TRAACT_PLUGIN_REGISTRATION
+    REGISTER_SPATIAL_COMPONENTS(traact::component::CerealFileRecorder)
+    REGISTER_COMPONENT(traact::component::CerealFileRecorder<traact::vision::CameraCalibrationHeader>)
+END_TRAACT_PLUGIN_REGISTRATION
 
-    using namespace rttr;
-    using namespace traact;
-    registration::class_<component::CerealFileRecorder<spatial::Pose6DHeader> >("FileRecorder_cereal_spatial:Pose6D").constructor<
-        std::string>()();
-    registration::class_<component::CerealFileRecorder<spatial::Position2DListHeader> >(
-        "FileRecorder_cereal_spatial:Position2DList").constructor<std::string>()();
-    registration::class_<component::CerealFileRecorder<spatial::Position3DListHeader> >(
-        "FileRecorder_cereal_spatial:Position3DList").constructor<std::string>()();
-}

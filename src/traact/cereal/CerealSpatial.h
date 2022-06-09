@@ -90,6 +90,20 @@ void load(Archive &archive,
     m.rotate(rot);
 };
 
+template<class Archive, class Scalar_>
+inline
+void serialize(Archive &archive,
+               Eigen::Translation<Scalar_, 2> &m) {
+    archive(cereal::make_nvp("x", m.x()), cereal::make_nvp("y", m.y()));
+};
+
+template<class Archive, class Scalar_>
+inline
+void serialize(Archive &archive,
+               Eigen::Translation<Scalar_, 3> &m) {
+    archive(cereal::make_nvp("x", m.x()), cereal::make_nvp("y", m.y()), cereal::make_nvp("z", m.z()));
+};
+
 }
 
 #endif //TRAACTMULTI_CEREALSPATIAL_H
