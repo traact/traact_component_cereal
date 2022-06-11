@@ -1,7 +1,7 @@
 /** Copyright (C) 2022  Frieder Pankratz <frieder.pankratz@gmail.com> **/
 
 
-#include <traact/component/FileRecorder.h>
+#include <traact/component/generic/FileRecorder.h>
 //#include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
 #include <fstream>
@@ -14,6 +14,10 @@ template<class T>
 class CerealFileRecorder : public FileRecorder<T> {
  public:
     CerealFileRecorder(const std::string &name) : FileRecorder<T>(name, "cereal") {}
+
+    [[nodiscard]] static traact::pattern::Pattern::Ptr GetPattern() {
+        return FileRecorder<T>::GetBasePattern("cereal");
+    }
 
     bool openFile() override {
         try {
@@ -57,13 +61,16 @@ class CerealFileRecorder : public FileRecorder<T> {
     //std::ofstream stream_;
     //std::shared_ptr<cereal::JSONOutputArchive> archive_;
     std::map<std::uint64_t, typename T::NativeType> all_data_;
- TRAACT_PLUGIN_ENABLE(FileWriter<T>, Component)
+
 };
+
+CREATE_SPATIAL_COMPONENTS(CerealFileRecorder)
+CREATE_TEMPLATED_TRAACT_COMPONENT_FACTORY(CerealFileRecorder, traact::vision, CameraCalibrationHeader)
+
 
 }
 
 BEGIN_TRAACT_PLUGIN_REGISTRATION
     REGISTER_SPATIAL_COMPONENTS(traact::component::CerealFileRecorder)
-    REGISTER_COMPONENT(traact::component::CerealFileRecorder<traact::vision::CameraCalibrationHeader>)
+    REGISTER_TEMPLATED_DEFAULT_COMPONENT(traact::component::CerealFileRecorder, CameraCalibrationHeader)
 END_TRAACT_PLUGIN_REGISTRATION
-

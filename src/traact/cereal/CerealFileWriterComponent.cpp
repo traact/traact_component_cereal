@@ -1,6 +1,6 @@
 /** Copyright (C) 2022  Frieder Pankratz <frieder.pankratz@gmail.com> **/
 
-#include <traact/component/FileWriter.h>
+#include <traact/component/generic/FileWriter.h>
 //#include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
 #include <fstream>
@@ -13,6 +13,10 @@ template<class T>
 class CerealFileWriter : public FileWriter<T> {
  public:
     CerealFileWriter(const std::string &name) : FileWriter<T>(name, "cereal") {}
+
+    [[nodiscard]] static traact::pattern::Pattern::Ptr GetPattern() {
+        return FileWriter<T>::GetBasePattern("cereal");
+    }
 
     bool openFile() override {
         return true;
@@ -46,15 +50,17 @@ class CerealFileWriter : public FileWriter<T> {
  private:
     std::ofstream stream_;
     typename T::NativeType value_;
-    //std::shared_ptr<cereal::JSONOutputArchive> archive_;
- TRAACT_PLUGIN_ENABLE(FileWriter<T>, Component)
+
+
 };
+CREATE_SPATIAL_COMPONENTS(CerealFileWriter)
+CREATE_TEMPLATED_TRAACT_COMPONENT_FACTORY(CerealFileWriter, traact::vision, CameraCalibrationHeader)
 
 }
 
-
 BEGIN_TRAACT_PLUGIN_REGISTRATION
     REGISTER_SPATIAL_COMPONENTS(traact::component::CerealFileWriter)
-    REGISTER_COMPONENT(traact::component::CerealFileWriter<traact::vision::CameraCalibrationHeader>)
+    REGISTER_TEMPLATED_DEFAULT_COMPONENT(traact::component::CerealFileWriter, CameraCalibrationHeader)
 END_TRAACT_PLUGIN_REGISTRATION
+
 

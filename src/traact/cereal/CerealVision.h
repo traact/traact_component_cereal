@@ -12,7 +12,7 @@
 #include <type_traits>
 #include <fmt/format.h>
 
-#include <traact/vision_datatypes.h>
+#include <traact/vision.h>
 
 namespace cereal {
 

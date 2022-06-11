@@ -1,7 +1,7 @@
 /** Copyright (C) 2022  Frieder Pankratz <frieder.pankratz@gmail.com> **/
 
 
-#include <traact/component/FilePlayer.h>
+#include <traact/component/generic/FilePlayer.h>
 //#include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
 #include <fstream>
@@ -14,6 +14,10 @@ template<class T>
 class CerealFilePlayer : public FilePlayer<T> {
  public:
     CerealFilePlayer(const std::string &name) : FilePlayer<T>(name, "cereal") {}
+
+    [[nodiscard]] static traact::pattern::Pattern::Ptr GetPattern() {
+        return FilePlayer<T>::GetBasePattern("cereal");
+    }
 
     bool openFile() override {
         try {
@@ -56,12 +60,18 @@ class CerealFilePlayer : public FilePlayer<T> {
  private:
     std::ifstream stream_;
     std::shared_ptr<cereal::JSONInputArchive> archive_;
- TRAACT_PLUGIN_ENABLE(FilePlayer<T>, Component)
+
 };
+
+CREATE_SPATIAL_COMPONENTS(CerealFilePlayer)
+CREATE_TEMPLATED_TRAACT_COMPONENT_FACTORY(CerealFilePlayer, traact::vision, CameraCalibrationHeader)
 
 }
 
+
+
+
 BEGIN_TRAACT_PLUGIN_REGISTRATION
     REGISTER_SPATIAL_COMPONENTS(traact::component::CerealFilePlayer)
-    REGISTER_COMPONENT(traact::component::CerealFilePlayer<traact::vision::CameraCalibrationHeader>)
+    REGISTER_TEMPLATED_DEFAULT_COMPONENT(traact::component::CerealFilePlayer, CameraCalibrationHeader)
 END_TRAACT_PLUGIN_REGISTRATION

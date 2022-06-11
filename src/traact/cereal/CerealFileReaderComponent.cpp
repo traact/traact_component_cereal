@@ -1,6 +1,6 @@
 /** Copyright (C) 2022  Frieder Pankratz <frieder.pankratz@gmail.com> **/
 
-#include <traact/component/FileReader.h>
+#include <traact/component/generic/FileReader.h>
 //#include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
 #include <fstream>
@@ -13,6 +13,10 @@ template<class T>
 class CerealFileReader : public FileReader<T> {
  public:
     CerealFileReader(const std::string &name) : FileReader<T>(name, "cereal") {}
+
+    [[nodiscard]] static traact::pattern::Pattern::Ptr GetPattern() {
+        return FileReader<T>::GetBasePattern("cereal");
+    }
 
     bool readValue(typename T::NativeType &data) override {
         try {
@@ -29,12 +33,15 @@ class CerealFileReader : public FileReader<T> {
 
  private:
 
- TRAACT_PLUGIN_ENABLE(FileReader<T>, Component)
+
 };
+
+CREATE_SPATIAL_COMPONENTS(CerealFileReader)
+CREATE_TEMPLATED_TRAACT_COMPONENT_FACTORY(CerealFileReader, traact::vision, CameraCalibrationHeader)
 
 }
 
 BEGIN_TRAACT_PLUGIN_REGISTRATION
     REGISTER_SPATIAL_COMPONENTS(traact::component::CerealFileReader)
-    REGISTER_COMPONENT(traact::component::CerealFileReader<traact::vision::CameraCalibrationHeader>)
+    REGISTER_TEMPLATED_DEFAULT_COMPONENT(traact::component::CerealFileReader, CameraCalibrationHeader)
 END_TRAACT_PLUGIN_REGISTRATION
