@@ -47,7 +47,7 @@ class CerealFilePlayer : public FilePlayer<T> {
         std::uint64_t ns;
         (*archive_)(ns);
 
-        ts = Timestamp::min() + TimeDuration(ns);
+        ts = kTimestampZero + TimeDuration(ns);
 
         return true;
     }
