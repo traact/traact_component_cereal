@@ -69,9 +69,9 @@ void serialize(Archive &archive,
 //template<class Archive, class _Scalar, int _Dim, int _Mode, int _Options>
 template<class Archive>
 void save(Archive &archive,
-          const Eigen::Affine3d &m) {
-    Eigen::Vector3d trans = m.translation();
-    Eigen::Quaterniond rot = Eigen::Quaterniond(m.rotation());
+          const traact::spatial::Pose6D &m) {
+    Eigen::Vector3<traact::Scalar> trans = m.translation();
+    traact::spatial::Rotation3D rot = traact::spatial::Rotation3D(m.rotation());
     archive(cereal::make_nvp("translation", trans),
             cereal::make_nvp("rotation", rot));
 };
@@ -79,9 +79,9 @@ void save(Archive &archive,
 //template<class Archive, class _Scalar, int _Dim, int _Mode, int _Options>
 template<class Archive>
 void load(Archive &archive,
-          Eigen::Affine3d &m) {
-    Eigen::Vector3d trans;
-    Eigen::Quaterniond rot;
+          traact::spatial::Pose6D &m) {
+    Eigen::Vector3<traact::Scalar> trans;
+    traact::spatial::Rotation3D rot;
     archive(cereal::make_nvp("translation", trans),
             cereal::make_nvp("rotation", rot));
 
