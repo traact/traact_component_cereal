@@ -64,7 +64,7 @@ class CerealFilePlayer : public FilePlayer<T> {
 };
 
 CREATE_SPATIAL_COMPONENTS(CerealFilePlayer)
-CREATE_TEMPLATED_TRAACT_COMPONENT_FACTORY(CerealFilePlayer, traact::vision, CameraCalibrationHeader)
+CREATE_VISION_COMPONENTS(CerealFilePlayer)
 
 }
 
@@ -73,5 +73,5 @@ CREATE_TEMPLATED_TRAACT_COMPONENT_FACTORY(CerealFilePlayer, traact::vision, Came
 
 BEGIN_TRAACT_PLUGIN_REGISTRATION
     REGISTER_SPATIAL_COMPONENTS(traact::component::CerealFilePlayer)
-    REGISTER_TEMPLATED_DEFAULT_COMPONENT(traact::component::CerealFilePlayer, CameraCalibrationHeader)
+    REGISTER_VISION_COMPONENTS(traact::component::CerealFilePlayer)
 END_TRAACT_PLUGIN_REGISTRATION

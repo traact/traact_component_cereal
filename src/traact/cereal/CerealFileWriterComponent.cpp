@@ -24,12 +24,16 @@ class CerealFileWriter : public FileWriter<T> {
 
     bool closeFile() override {
         try {
+
             stream_.open(FileWriter<T>::filename_);
 
+            if(value_.has_value())
             {
+                SPDLOG_TRACE("write cereal file: {0}", FileWriter<T>::filename_);
                 cereal::JSONOutputArchive archive_(stream_);
-                archive_(value_);
-                //archive_( ts.time_since_epoch().count());
+                archive_(value_.value());
+            } else {
+                SPDLOG_TRACE("no data to write cereal file: {0}", FileWriter<T>::filename_);
             }
 
             stream_.flush();
@@ -49,18 +53,18 @@ class CerealFileWriter : public FileWriter<T> {
 
  private:
     std::ofstream stream_;
-    typename T::NativeType value_;
+    std::optional<typename T::NativeType> value_;
 
 
 };
 CREATE_SPATIAL_COMPONENTS(CerealFileWriter)
-CREATE_TEMPLATED_TRAACT_COMPONENT_FACTORY(CerealFileWriter, traact::vision, CameraCalibrationHeader)
+CREATE_VISION_COMPONENTS(CerealFileWriter)
 
 }
 
 BEGIN_TRAACT_PLUGIN_REGISTRATION
     REGISTER_SPATIAL_COMPONENTS(traact::component::CerealFileWriter)
-    REGISTER_TEMPLATED_DEFAULT_COMPONENT(traact::component::CerealFileWriter, CameraCalibrationHeader)
+    REGISTER_VISION_COMPONENTS(traact::component::CerealFileWriter)
 END_TRAACT_PLUGIN_REGISTRATION
 
 

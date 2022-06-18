@@ -65,12 +65,12 @@ class CerealFileRecorder : public FileRecorder<T> {
 };
 
 CREATE_SPATIAL_COMPONENTS(CerealFileRecorder)
-CREATE_TEMPLATED_TRAACT_COMPONENT_FACTORY(CerealFileRecorder, traact::vision, CameraCalibrationHeader)
+CREATE_VISION_COMPONENTS(CerealFileRecorder)
 
 
 }
 
 BEGIN_TRAACT_PLUGIN_REGISTRATION
     REGISTER_SPATIAL_COMPONENTS(traact::component::CerealFileRecorder)
-    REGISTER_TEMPLATED_DEFAULT_COMPONENT(traact::component::CerealFileRecorder, CameraCalibrationHeader)
+    REGISTER_VISION_COMPONENTS(traact::component::CerealFileRecorder)
 END_TRAACT_PLUGIN_REGISTRATION
