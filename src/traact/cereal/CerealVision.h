@@ -32,6 +32,30 @@ void serialize(Archive &archive,
     );
 }
 
+template<class Archive>
+inline
+void serialize(Archive &archive,
+               traact::vision::Position2D &m) {
+    archive(cereal::make_nvp("m00", m.x),
+            cereal::make_nvp("m10", m.y));
+}
+template<class Archive>
+inline
+void serialize(Archive &archive,
+               traact::vision::Position3D &m) {
+    archive(cereal::make_nvp("m00", m.x),
+            cereal::make_nvp("m10", m.y),
+            cereal::make_nvp("m20", m.z));
+}
+
+template<class Archive>
+inline
+void serialize(Archive &archive,
+               traact::vision::Image &m) {
+
+    archive(cereal::make_nvp("foo", 0));
+}
+
 }
 
 #endif //TRAACTMULTI_CEREALVISION_H

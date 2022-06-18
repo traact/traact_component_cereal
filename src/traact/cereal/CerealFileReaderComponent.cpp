@@ -25,7 +25,7 @@ class CerealFileReader : public FileReader<T> {
             cereal::JSONInputArchive archive(stream);
             archive(data);
         } catch (...) {
-            SPDLOG_ERROR("unkown exception on readValue {0}", FileReader<T>::filename_);
+            SPDLOG_ERROR("unknown exception on readValue {0}", FileReader<T>::filename_);
         }
 
         return true;
@@ -37,11 +37,11 @@ class CerealFileReader : public FileReader<T> {
 };
 
 CREATE_SPATIAL_COMPONENTS(CerealFileReader)
-CREATE_TEMPLATED_TRAACT_COMPONENT_FACTORY(CerealFileReader, traact::vision, CameraCalibrationHeader)
+CREATE_VISION_COMPONENTS(CerealFileReader)
 
 }
 
 BEGIN_TRAACT_PLUGIN_REGISTRATION
     REGISTER_SPATIAL_COMPONENTS(traact::component::CerealFileReader)
-    REGISTER_TEMPLATED_DEFAULT_COMPONENT(traact::component::CerealFileReader, CameraCalibrationHeader)
+    REGISTER_VISION_COMPONENTS(traact::component::CerealFileReader)
 END_TRAACT_PLUGIN_REGISTRATION
