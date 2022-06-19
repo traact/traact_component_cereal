@@ -34,7 +34,7 @@ class CerealFileRecorder : public FileRecorder<T> {
     bool closeFile() override {
         try {
             std::ofstream stream;
-            stream.open(FileWriter<T>::filename_);
+            stream.open(FileRecorder<T>::filename_);
             {
                 cereal::JSONOutputArchive archive(stream);
                 archive(all_data_);

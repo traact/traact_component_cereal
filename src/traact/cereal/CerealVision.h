@@ -56,6 +56,29 @@ void serialize(Archive &archive,
     archive(cereal::make_nvp("foo", 0));
 }
 
+template<class Archive>
+inline
+void serialize(Archive &archive,
+               traact::vision::Feature &m) {
+    archive(cereal::make_nvp("feature_id", m.feature_id), cereal::make_nvp("constructed_from", m.constructed_from));
+}
+
+template<class Archive>
+inline
+void serialize(Archive &archive,
+               traact::vision::FeatureList &m) {
+    archive(cereal::make_nvp("feature_id", m.feature_id), cereal::make_nvp("constructed_from", m.constructed_from));
+}
+
+template<class Archive>
+inline
+void serialize(Archive &archive,
+               cv::KeyPoint &m) {
+
+    archive(make_nvp("point",m.pt), make_nvp("size", m.size), make_nvp("angle", m.angle), make_nvp("octave", m.octave),
+            make_nvp("class_id",m.class_id), make_nvp("response",m.response));
+}
+
 }
 
 #endif //TRAACTMULTI_CEREALVISION_H
