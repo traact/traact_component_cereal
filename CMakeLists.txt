@@ -19,5 +19,3 @@ set(COMPONENT_CEREAL_SRC
 add_library(${CONAN_PACKAGE_NAME} SHARED ${COMPONENT_CEREAL_SRC})
 
 conan_target_link_libraries(${CONAN_PACKAGE_NAME})
-
-target_link_libraries(dataflow_test_test PRIVATE ${CONAN_PACKAGE_NAME})
