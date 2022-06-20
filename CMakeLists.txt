@@ -19,3 +19,11 @@ set(COMPONENT_CEREAL_SRC
 add_library(${CONAN_PACKAGE_NAME} SHARED ${COMPONENT_CEREAL_SRC})
 
 conan_target_link_libraries(${CONAN_PACKAGE_NAME})
+
+install(DIRECTORY "src/traact" # source directory
+        DESTINATION "include" # target directory
+        FILES_MATCHING # install only matched files
+        PATTERN "*.h" # select header files
+        )
+
+include(traact_default_library_final)
