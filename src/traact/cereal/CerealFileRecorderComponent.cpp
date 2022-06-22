@@ -7,7 +7,9 @@
 #include <fstream>
 #include "CerealSpatial.h"
 #include "CerealVision.h"
-
+#include <cppfs/fs.h>
+#include <cppfs/FileHandle.h>
+#include <cppfs/FilePath.h>
 namespace traact::component {
 
 template<class T>
@@ -33,14 +35,18 @@ class CerealFileRecorder : public FileRecorder<T> {
 
     bool closeFile() override {
         try {
-            std::ofstream stream;
-            stream.open(FileRecorder<T>::filename_);
+//            std::ofstream stream;
+//            stream.open(FileRecorder<T>::filename_);
+            cppfs::FilePath path(FileWriter<T>::filename_);
+            util::createFileDirectory(path.fullPath());
+            cppfs::FileHandle file = cppfs::fs::open(FileWriter<T>::filename_);
             {
-                cereal::JSONOutputArchive archive(stream);
+                auto stream = file.createOutputStream();
+                cereal::JSONOutputArchive archive(*stream);
                 archive(all_data_);
             }
 
-            stream.close();
+            //stream.close();
         } catch (...) {
             SPDLOG_ERROR("{0}: Unspecified error when closing file", FileWriter<T>::name_);
             return false;

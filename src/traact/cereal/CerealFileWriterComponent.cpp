@@ -6,7 +6,10 @@
 #include <fstream>
 #include "CerealSpatial.h"
 #include "CerealVision.h"
-
+#include <cppfs/fs.h>
+#include <cppfs/FileHandle.h>
+#include <cppfs/FilePath.h>
+#include <traact/util/FileUtil.h>
 namespace traact::component {
 
 template<class T>
@@ -25,19 +28,23 @@ class CerealFileWriter : public FileWriter<T> {
     bool closeFile() override {
         try {
 
-            stream_.open(FileWriter<T>::filename_);
+            //stream_.open(FileWriter<T>::filename_);
+            cppfs::FilePath path(FileWriter<T>::filename_);
+            util::createFileDirectory(path.fullPath());
+            cppfs::FileHandle file = cppfs::fs::open(FileWriter<T>::filename_);
 
             if(value_.has_value())
             {
+                auto stream = file.createOutputStream();
                 SPDLOG_TRACE("write cereal file: {0}", FileWriter<T>::filename_);
-                cereal::JSONOutputArchive archive_(stream_);
+                cereal::JSONOutputArchive archive_(*stream);
                 archive_(value_.value());
             } else {
                 SPDLOG_TRACE("no data to write cereal file: {0}", FileWriter<T>::filename_);
             }
 
-            stream_.flush();
-            stream_.close();
+            //stream_.flush();
+            //stream_.close();
 
         } catch (...) {
             SPDLOG_ERROR("{0} : could not write file", Component::name_);
@@ -52,7 +59,7 @@ class CerealFileWriter : public FileWriter<T> {
     }
 
  private:
-    std::ofstream stream_;
+    //std::ofstream stream_;
     std::optional<typename T::NativeType> value_;
 
 
