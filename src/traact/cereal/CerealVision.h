@@ -59,6 +59,14 @@ void serialize(Archive &archive,
 template<class Archive>
 inline
 void serialize(Archive &archive,
+               traact::vision::GPUImage &m) {
+
+    archive(cereal::make_nvp("gpu foo", 0));
+}
+
+template<class Archive>
+inline
+void serialize(Archive &archive,
                traact::vision::Feature &m) {
     archive(cereal::make_nvp("feature_id", m.feature_id), cereal::make_nvp("constructed_from", m.constructed_from));
 }
