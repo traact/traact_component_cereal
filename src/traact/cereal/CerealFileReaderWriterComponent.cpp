@@ -9,6 +9,7 @@
 #include <cppfs/fs.h>
 #include "CerealSpatial.h"
 #include "CerealVision.h"
+#include <traact/spatial_convert.h>
 
 namespace traact::component {
 
@@ -18,7 +19,17 @@ class CerealFileReaderWriterRead : public FileReaderWriterRead<T> {
     CerealFileReaderWriterRead(const std::string &name) : FileReaderWriterRead<T>(name, "cereal") {}
 
     [[nodiscard]] static traact::pattern::Pattern::Ptr GetPattern() {
-        return FileReaderWriterRead<T>::GetBasePattern("cereal");
+        auto pattern = FileReaderWriterRead<T>::GetBasePattern("cereal");
+        pattern->addParameter("CoordinateSystem", "Traact", spatial::CoordinateSystemNames);
+        return pattern;
+    }
+    virtual bool configure(const pattern::instance::PatternInstance &pattern_instance,
+                           buffer::ComponentBufferConfig *data) override {
+        pattern::setValueFromParameter(pattern_instance,
+                                       "CoordinateSystem",
+                                       target_system_,
+                                       "Traact",spatial::CoordinateSystemValues);
+        return FileReaderWriterRead<T>::configure(pattern_instance, data);
     }
 
     bool readValue(typename T::NativeType &data) override {
@@ -27,6 +38,7 @@ class CerealFileReaderWriterRead : public FileReaderWriterRead<T> {
             stream.open(FileReaderWriterRead<T>::filename_);
             cereal::JSONInputArchive archive(stream);
             archive(data);
+            data = spatial::Convert<T>::toTraact(data, target_system_);
         } catch (...) {
             SPDLOG_ERROR("unknown exception on readValue {0}", FileReaderWriterRead<T>::filename_);
         }
@@ -35,7 +47,7 @@ class CerealFileReaderWriterRead : public FileReaderWriterRead<T> {
     }
 
  private:
-
+    spatial::CoordinateSystems target_system_;
 
 };
 
@@ -45,7 +57,18 @@ class CerealFileReaderWriterWrite : public FileReaderWriterWrite<T> {
     CerealFileReaderWriterWrite(const std::string &name) : FileReaderWriterWrite<T>(name, "cereal") {}
 
     [[nodiscard]] static traact::pattern::Pattern::Ptr GetPattern() {
-        return FileReaderWriterWrite<T>::GetBasePattern("cereal");
+        auto pattern = FileReaderWriterWrite<T>::GetBasePattern("cereal");
+        pattern->addParameter("CoordinateSystem", "Traact", spatial::CoordinateSystemNames);
+        return pattern;
+    }
+
+    virtual bool configure(const pattern::instance::PatternInstance &pattern_instance,
+                           buffer::ComponentBufferConfig *data) override {
+        pattern::setValueFromParameter(pattern_instance,
+                                       "CoordinateSystem",
+                                       target_system_,
+                                       "Traact",spatial::CoordinateSystemValues);
+        return FileReaderWriterModuleComponent<T>::configure(pattern_instance, data);
     }
 
     bool saveValue(Timestamp ts, const typename T::NativeType &value) override {
@@ -60,7 +83,8 @@ class CerealFileReaderWriterWrite : public FileReaderWriterWrite<T> {
                 auto stream = file.createOutputStream();
                 SPDLOG_TRACE("write cereal file: {0}", FileReaderWriterWrite<T>::filename_);
                 cereal::JSONOutputArchive archive_(*stream);
-                archive_(FileReaderWriterWrite<T>::value_module_->value_.value());
+                typename T::NativeType result = spatial::Convert<T>::fromTraact(FileReaderWriterWrite<T>::value_module_->value_.value(), target_system_);
+                archive_(result);
             } else {
                 SPDLOG_TRACE("no data to write cereal file: {0}", FileReaderWriterWrite<T>::filename_);
             }
@@ -70,8 +94,8 @@ class CerealFileReaderWriterWrite : public FileReaderWriterWrite<T> {
 
         return true;
     }
-
-
+ private:
+    spatial::CoordinateSystems target_system_;
 
 };
 

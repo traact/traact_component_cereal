@@ -10,6 +10,7 @@
 #include <cppfs/fs.h>
 #include <cppfs/FileHandle.h>
 #include <cppfs/FilePath.h>
+#include <traact/spatial_convert.h>
 namespace traact::component {
 
 template<class T>
@@ -18,7 +19,18 @@ class CerealFileRecorder : public FileRecorder<T> {
     CerealFileRecorder(const std::string &name) : FileRecorder<T>(name, "cereal") {}
 
     [[nodiscard]] static traact::pattern::Pattern::Ptr GetPattern() {
-        return FileRecorder<T>::GetBasePattern("cereal");
+        auto pattern = FileRecorder<T>::GetBasePattern("cereal");
+        pattern->addParameter("CoordinateSystem", "Traact", spatial::CoordinateSystemNames);
+        return pattern;
+    }
+
+    bool configure(const pattern::instance::PatternInstance &pattern_instance,
+                   buffer::ComponentBufferConfig *data) override {
+        pattern::setValueFromParameter(pattern_instance,
+                                       "CoordinateSystem",
+                                       target_system_,
+                                       "Traact",spatial::CoordinateSystemValues);
+        return FileRecorder<T>::configure(pattern_instance, data);
     }
 
     bool openFile() override {
@@ -58,7 +70,8 @@ class CerealFileRecorder : public FileRecorder<T> {
     bool saveValue(Timestamp ts, const typename T::NativeType &value) override {
 
         std::uint64_t ns = ts.time_since_epoch().count();
-        all_data_.emplace(std::make_pair(ns, value));
+        auto data = spatial::Convert<T>::toTraact(value, target_system_);
+        all_data_.emplace(std::make_pair(ns, data));
 
         return true;
     }
@@ -67,6 +80,7 @@ class CerealFileRecorder : public FileRecorder<T> {
     //std::ofstream stream_;
     //std::shared_ptr<cereal::JSONOutputArchive> archive_;
     std::map<std::uint64_t, typename T::NativeType> all_data_;
+    spatial::CoordinateSystems target_system_;
 
 };
 

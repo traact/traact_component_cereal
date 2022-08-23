@@ -6,7 +6,7 @@
 #include <fstream>
 #include "CerealSpatial.h"
 #include "CerealVision.h"
-
+#include <traact/spatial_convert.h>
 namespace traact::component {
 
 template<class T>
@@ -15,7 +15,18 @@ class CerealFileReader : public FileReader<T> {
     CerealFileReader(const std::string &name) : FileReader<T>(name, "cereal") {}
 
     [[nodiscard]] static traact::pattern::Pattern::Ptr GetPattern() {
-        return FileReader<T>::GetBasePattern("cereal");
+        auto pattern = FileReader<T>::GetBasePattern("cereal");
+        pattern->addParameter("CoordinateSystem", "Traact", spatial::CoordinateSystemNames);
+        return pattern;
+    }
+
+    bool configure(const pattern::instance::PatternInstance &pattern_instance,
+                   buffer::ComponentBufferConfig *data) override {
+        pattern::setValueFromParameter(pattern_instance,
+                                       "CoordinateSystem",
+                                       target_system_,
+                                       "Traact",spatial::CoordinateSystemValues);
+        return FileReader<T>::configure(pattern_instance, data);
     }
 
     bool readValue(typename T::NativeType &data) override {
@@ -24,6 +35,7 @@ class CerealFileReader : public FileReader<T> {
             stream.open(FileReader<T>::filename_);
             cereal::JSONInputArchive archive(stream);
             archive(data);
+            data = spatial::Convert<T>::toTraact(data, target_system_);
         } catch (...) {
             SPDLOG_ERROR("unknown exception on readValue {0}", FileReader<T>::filename_);
         }
@@ -32,6 +44,7 @@ class CerealFileReader : public FileReader<T> {
     }
 
  private:
+    spatial::CoordinateSystems target_system_;
 
 
 };

@@ -10,6 +10,7 @@
 #include <cppfs/FileHandle.h>
 #include <cppfs/FilePath.h>
 #include <traact/util/FileUtil.h>
+#include <traact/spatial_convert.h>
 namespace traact::component {
 
 template<class T>
@@ -18,7 +19,18 @@ class CerealFileWriter : public FileWriter<T> {
     CerealFileWriter(const std::string &name) : FileWriter<T>(name, "cereal") {}
 
     [[nodiscard]] static traact::pattern::Pattern::Ptr GetPattern() {
-        return FileWriter<T>::GetBasePattern("cereal");
+        auto pattern = FileWriter<T>::GetBasePattern("cereal");
+        pattern->addParameter("CoordinateSystem", "Traact", spatial::CoordinateSystemNames);
+        return pattern;
+    }
+
+    bool configure(const pattern::instance::PatternInstance &pattern_instance,
+                   buffer::ComponentBufferConfig *data) override {
+        pattern::setValueFromParameter(pattern_instance,
+                                       "CoordinateSystem",
+                                       target_system_,
+                                       "Traact",spatial::CoordinateSystemValues);
+        return FileWriter<T>::configure(pattern_instance, data);
     }
 
     bool openFile() override {
@@ -38,7 +50,8 @@ class CerealFileWriter : public FileWriter<T> {
                 auto stream = file.createOutputStream();
                 SPDLOG_TRACE("write cereal file: {0}", FileWriter<T>::filename_);
                 cereal::JSONOutputArchive archive_(*stream);
-                archive_(value_.value());
+                auto data = spatial::Convert<T>::toTraact(value_.value(), target_system_);
+                archive_(data);
             } else {
                 SPDLOG_TRACE("no data to write cereal file: {0}", FileWriter<T>::filename_);
             }
@@ -61,6 +74,7 @@ class CerealFileWriter : public FileWriter<T> {
  private:
     //std::ofstream stream_;
     std::optional<typename T::NativeType> value_;
+    spatial::CoordinateSystems target_system_;
 
 
 };

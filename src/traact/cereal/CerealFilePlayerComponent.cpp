@@ -7,6 +7,7 @@
 #include <fstream>
 #include "CerealSpatial.h"
 #include "CerealVision.h"
+#include <traact/spatial_convert.h>
 
 namespace traact::component {
 
@@ -16,7 +17,18 @@ class CerealFilePlayer : public FilePlayer<T> {
     CerealFilePlayer(const std::string &name) : FilePlayer<T>(name, "cereal") {}
 
     [[nodiscard]] static traact::pattern::Pattern::Ptr GetPattern() {
-        return FilePlayer<T>::GetBasePattern("cereal");
+        auto pattern = FilePlayer<T>::GetBasePattern("cereal");
+        pattern->addParameter("CoordinateSystem", "Traact", spatial::CoordinateSystemNames);
+        return pattern;
+    }
+
+    bool configure(const pattern::instance::PatternInstance &pattern_instance,
+                           buffer::ComponentBufferConfig *data) override {
+        pattern::setValueFromParameter(pattern_instance,
+                                       "CoordinateSystem",
+                                       target_system_,
+                                       "Traact",spatial::CoordinateSystemValues);
+        return FilePlayer<T>::configure(pattern_instance, data);
     }
 
     bool openFile() override {
@@ -54,12 +66,14 @@ class CerealFilePlayer : public FilePlayer<T> {
 
     bool readValue(typename T::NativeType &data) override {
         (*archive_)(data);
+        data = spatial::Convert<T>::toTraact(data, target_system_);
         return true;
     }
 
  private:
     std::ifstream stream_;
     std::shared_ptr<cereal::JSONInputArchive> archive_;
+    spatial::CoordinateSystems target_system_;
 
 };
 
