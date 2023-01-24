@@ -24,4 +24,4 @@ class TraactPackage(ConanFile):
         self.traact_requires("traact_vision", "latest")
         self.requires("cereal/1.3.0")
         if self.options.with_tests:
-            self.requires("gtest/[>=1.11.0]")
+            self.requires("gtest/cci.20210126")
