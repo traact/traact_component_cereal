@@ -5,8 +5,8 @@
 //#include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
 #include <fstream>
-#include "CerealSpatial.h"
-#include "CerealVision.h"
+#include "traact/cereal/CerealSpatial.h"
+#include "traact/cereal/CerealVision.h"
 #include <cppfs/fs.h>
 #include <cppfs/FileHandle.h>
 #include <cppfs/FilePath.h>

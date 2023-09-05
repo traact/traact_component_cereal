@@ -4,8 +4,8 @@
 //#include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
 #include <fstream>
-#include "CerealSpatial.h"
-#include "CerealVision.h"
+#include "traact/cereal/CerealSpatial.h"
+#include "traact/cereal/CerealVision.h"
 #include <traact/spatial_convert.h>
 namespace traact::component {
 

@@ -1,29 +1,42 @@
 cmake_minimum_required(VERSION 3.16)
 
-if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
-    include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
-else ()
-    message(FATAL_ERROR "The file conanbuildinfo.cmake doesn't exist, you have to run conan install first")
-endif ()
+set(TARGET_NAME traact_component_cereal)
 
-list(APPEND CMAKE_MODULE_PATH ${CONAN_TRAACT_RUN_ENV_ROOT}/cmake)
+project(${TARGET_NAME} VERSION "0.0.0" LANGUAGES CXX)
 
-project(${CONAN_PACKAGE_NAME}_PROJECT VERSION ${CONAN_PACKAGE_VERSION})
+find_package(traact_base)
+list(APPEND CMAKE_MODULE_PATH ${traact_base_INCLUDE_DIR})
 
 include(traact_default_library_setup)
 
-set(COMPONENT_CEREAL_SRC
-        src/traact/traact_serialization_export.h
-        src/traact/cereal/CerealSpatial.h src/traact/cereal/CerealVision.h src/traact/cereal/CerealFileWriterComponent.cpp src/traact/cereal/CerealFileReaderComponent.cpp src/traact/cereal/CerealFileRecorderComponent.cpp src/traact/cereal/CerealFilePlayerComponent.cpp src/traact/cereal/CerealFileReaderWriterComponent.cpp)
-
-add_library(${CONAN_PACKAGE_NAME} SHARED ${COMPONENT_CEREAL_SRC})
-
-conan_target_link_libraries(${CONAN_PACKAGE_NAME})
-
-install(DIRECTORY "src/traact" # source directory
-        DESTINATION "include" # target directory
-        FILES_MATCHING # install only matched files
-        PATTERN "*.h" # select header files
+set(CEREAL_PUBLIC_HEADER
+        src/traact/cereal/CerealSpatial.h 
+        src/traact/cereal/CerealVision.h 
         )
+
+set(COMPONENT_CEREAL_SRC                
+        src/traact/cereal/CerealFileWriterComponent.cpp 
+        src/traact/cereal/CerealFileReaderComponent.cpp 
+        src/traact/cereal/CerealFileRecorderComponent.cpp 
+        src/traact/cereal/CerealFilePlayerComponent.cpp 
+        src/traact/cereal/CerealFileReaderWriterComponent.cpp
+        )
+
+add_library(${TARGET_NAME} SHARED ${COMPONENT_CEREAL_SRC})
+
+find_package(traact_spatial REQUIRED)
+find_package(traact_vision REQUIRED)
+find_package(cereal REQUIRED)
+find_package(cppfs REQUIRED)
+
+target_link_libraries(${TARGET_NAME} traact_spatial::traact_spatial traact_vision::traact_vision cereal::cereal cppfs::cppfs)
+
+generate_export_header(${TARGET_NAME} EXPORT_FILE_NAME ${CMAKE_CURRENT_SOURCE_DIR}/include/traact/traact_cereal_export.h)
+
+target_include_directories(${TARGET_NAME} PUBLIC
+$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 include(traact_default_library_final)
